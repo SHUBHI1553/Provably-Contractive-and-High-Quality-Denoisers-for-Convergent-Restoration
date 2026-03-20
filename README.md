@@ -4,15 +4,25 @@ This repository contains the code used to reproduce the denoising, deblurring, a
 
 
 #Folder Structure
+
 │
+
 ├── denoising_test.py
+
 ├── sparse_deblur.py
+
 ├── superresolution.py
+
 ├── model.py
+
 ├── utils.py
+
 │
-├── images/      # input images for each 
+
+├── images/  # input images for each 
+
 ├── models/      # pretrained weights (.pth) here
+
 └── outputs/     # results saved here
 
 #All required Python packages are listed in requirements.txt. Install them with
