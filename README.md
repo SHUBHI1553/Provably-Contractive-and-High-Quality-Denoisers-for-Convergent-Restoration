@@ -1,35 +1,34 @@
-This repository contains the code used to reproduce the denoising, deblurring, and super-resolution results in our paper.
+📌 Overview
 
+This repository provides the implementation used to reproduce the denoising, deblurring, and super-resolution results presented in our paper.
 
-#Folder Structure
+📁 Repository Structure
+.
+├── denoising_test.py        # Denoising script
+├── sparse_deblur.py        # Deblurring script
+├── superresolution.py      # Super-resolution script
+├── model.py                # Model architecture
+├── utils.py                # Utility functions
 │
-├── denoising_test.py
-├── sparse_deblur.py
-├── superresolution.py
-├── model.py
-├── utils.py
-│
-├── images/      # input images for each 
-├── models/      # pretrained weights (.pth) here
-└── outputs/     # results saved here
+├── images/                 # Input images
+├── models/                 # Pretrained model weights (.pth)
+└── outputs/                # Saved results
+⚙️ Installation
 
-#All required Python packages are listed in requirements.txt. Install them with
+All required Python dependencies are listed in requirements.txt.
+
 pip install --upgrade pip
 pip install -r requirements.txt
+🚀 Usage
 
-##Running the Code
+Run the scripts from inside the OUR_codes/ directory.
 
-Run each script from inside OUR_codes/:
-
-#Denoising
+🔹 Denoising
 python denoising_test.py
-
-#Deblurring
+🔹 Deblurring
 python pnp_deblurring.py
-
-#Super-Resolution
+🔹 Super-Resolution
 python pnp_superresolution.py
+📦 Outputs
 
-
-#Outputs will be saved automatically inside:
-outputs/
+All results are automatically saved in the outputs/ directory.
