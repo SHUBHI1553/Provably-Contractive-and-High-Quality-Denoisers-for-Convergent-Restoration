@@ -9,12 +9,8 @@ import pywt
 import time
 
 
-def _tukey_window_for_cola(ps: int, stride: int, device, dtype):
-    """
-    Tukey window whose cosine taper length equals the overlap (ps - stride).
-    This makes 1D overlap-add with hop=stride sum to a constant over the interior.
-    alpha = 2 * overlap / (ps - 1). We keep floor=0 for exact COLA in theory.
-    """
+def overlap_and_add(ps: int, stride: int, device, dtype):
+      
     overlap = ps - stride
     alpha = 0.0 if overlap <= 0 else min(1.0, 2.0 * overlap / max(1, (ps - 1)))
 
@@ -30,13 +26,13 @@ def _tukey_window_for_cola(ps: int, stride: int, device, dtype):
             w[:L] = taper
             w[-L:] = torch.flip(taper, dims=[0])
 
-    # 2D separable window, normalized to peak 1 (COLA gives constant sum automatically)
+   
     w2 = (w[:, None] * w[None, :])
     w2 = w2 / (w2.max() + 1e-12)
     return w2[None, None, ...]  # (1,1,ps,ps)
 
 @torch.no_grad()
-def infer_patchwise_tukey_batched(
+def denoising_image(
     model,
     noisy,
     patch_size: int = 64,
@@ -44,21 +40,7 @@ def infer_patchwise_tukey_batched(
     max_patches_per_batch: int = 128,
 ):
     """
-    COLA-enforced Tukey blending with batched patch inference.
-
-    - Same behavior as infer_patchwise_tukey:
-        * Pads by overlap on all sides
-        * Adds tail pad so (H_ext - ps) and (W_ext - ps) are multiples of stride
-        * Uses Tukey window with taper length = overlap = (ps - stride)
-        * Tiles with hop = stride on the extended canvas
-        * Crops back to original region
-    - Difference:
-        * All patches are processed in batches to reduce the number of model() calls.
-
-    Assumes:
-        patch_size is a multiple of stride.
-        model: (N, C, ps, ps) -> (N, C, ps, ps)
-        noisy: (B, C, H, W)
+    Patch-wise denoising with overlap-and-add blending (batched).
     """
     model_was_training = model.training
     model.eval()
@@ -66,7 +48,7 @@ def infer_patchwise_tukey_batched(
     B, C, h, w = noisy.shape
     device, dtype = noisy.device, noisy.dtype
     ps, s = patch_size, stride
-    assert ps % s == 0, "This COLA construction assumes patch_size is a multiple of stride."
+    assert ps % s == 0, 
 
     overlap = ps - s
 
@@ -83,7 +65,7 @@ def infer_patchwise_tukey_batched(
     _, _, H, W = x.shape
 
     # 3) COLA Tukey window (1,1,ps,ps), taper length = overlap
-    win2d = _tukey_window_for_cola(ps, s, device, dtype)  # you already have this
+    win2d = overlap_and_add(ps, s, device, dtype)  # you already have this
 
     out = torch.zeros((B, C, H, W), device=device, dtype=dtype)
     weight = torch.zeros((B, 1, H, W), device=device, dtype=dtype)  # scalar weight per pixel
