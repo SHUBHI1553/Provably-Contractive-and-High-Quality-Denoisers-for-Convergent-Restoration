@@ -8,7 +8,7 @@ from torchvision.utils import save_image
 
 from skimage.metrics import peak_signal_noise_ratio as psnr_metric
 from skimage.metrics import structural_similarity as ssim_metric
-from utils import infer_patchwise_tukey_batched
+from utils import denoising_image
 
 
 # ------------------------------------------
@@ -70,7 +70,7 @@ def main():
     noisy = to_tensor(noisy_np, device)
 
     # Run our model
-    den = infer_patchwise_tukey_batched(model, noisy)
+    den = denoising_image(model, noisy)
 
     # Convert to uint8
     den_np = to_numpy_uint8(den)
